@@ -1,0 +1,89 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}My Sentiment App{% endblock %}</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Particles.js -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- jsPDF & autotable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <!-- Main JS -->
+  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+
+  <style>
+
+    /* Gradient background + fade */
+    #particles-js {
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+    }
+    @keyframes gradientBG {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    #particles-js::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to bottom, transparent, #0f2027);
+    }
+
+    /* Nav indicator hardware acceleration hint */
+    #nav-indicator {
+      will-change: transform, width;
+    }
+  </style>
+</head>
+<body class="relative min-h-screen text-white overflow-hidden">
+  <div id="particles-js" class="absolute inset-0 z-0"></div>
+
+  <div class="relative z-10 flex flex-col min-h-screen">
+    <!-- Pill-style Nav -->
+    <nav class="relative bg-white bg-opacity-10 backdrop-blur-lg p-1 rounded-full mx-auto mt-4 w-max">
+      <div id="nav-indicator"
+           class="absolute inset-y-1 bg-blue-600 rounded-full z-0"
+           style="width:0; transform: translateX(0)"></div>
+
+      <ul class="relative flex space-x-2 z-10">
+        <li><a href="/" class="nav-link px-4 py-2 text-white opacity-60">Home</a></li>
+        <li><a href="/analyze" class="nav-link px-4 py-2 text-white opacity-60">Analyze</a></li>
+        <li><a href="/about" class="nav-link px-4 py-2 text-white opacity-60">About</a></li>
+      </ul>
+    </nav>
+
+    <main class="flex-grow">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <script>
+    particlesJS('particles-js',{
+      particles: {
+        number:{value:60},
+        color:{value:"#ffffff"},
+        shape:{type:"circle"},
+        opacity:{value:0.4},
+        size:{value:3},
+        move:{enable:true, direction:"top", speed:2}
+      },
+      interactivity:{ events:{ onhover:{enable:false}, onclick:{enable:false} } },
+      retina_detect:true
+    });
+  </script>
+
+  {% block scripts %}{% endblock %}
+  
+</body>
+</html>
