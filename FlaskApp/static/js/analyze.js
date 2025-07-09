@@ -6,24 +6,28 @@ document.addEventListener("DOMContentLoaded", () => {
   let   resultSec = null;
 
   // 1) Initial GSAP setup & entrance
-  gsap.set(sidebar, { x:-100, opacity:0 });
-  gsap.set(content, { x: 100, opacity:0, width:"20rem" });
-  gsap.to(sidebar, { duration:0.8, x:0, opacity:1, ease:"power2.out", delay:0.2 });
-  gsap.to(content, { duration:0.8, x:0, opacity:1, ease:"power2.out", delay:0.5 });
+  gsap.set(sidebar, { x: -100, opacity: 0 });
+  gsap.set(content, { x:  100, opacity: 0 });
+  gsap.to(sidebar,  { duration: 0.8, x: 0,   opacity: 1, ease: "power2.out", delay: 0.2 });
+  gsap.to(content,  { duration: 0.8, x: 0,   opacity: 1, ease: "power2.out", delay: 0.5 });
 
-  // 2) Tab switcher
+  // 2) Tab switcher: hide forms, collapse result, reset widths
   window.loadSection = sec => {
-    document.querySelectorAll(".form-section").forEach(f=>f.classList.add("hidden"));
+    document.querySelectorAll(".form-section").forEach(f => f.classList.add("hidden"));
     document.getElementById(`${sec}-form`).classList.remove("hidden");
+
     if (resultSec) {
-      gsap.to(resultSec, { duration:0.4, width:"5%", autoAlpha:0, ease:"power2.out" });
-      gsap.to(content,   { duration:0.4, width:"20rem",               ease:"power2.out" });
+      // collapse right panel and reset flex
+      gsap.to(resultSec, { duration: 0.4, flexGrow: 0, autoAlpha: 0, ease: "power2.out" });
     }
-    if (sec==="scrape") document.getElementById("scrape-output").innerHTML = "";
+    // restore content fixed width
+    gsap.to(content, { duration: 0.4, flexGrow: 0, width: "20rem", ease: "power2.out" });
+
+    if (sec === "scrape") document.getElementById("scrape-output").innerHTML = "";
   };
   loadSection("text");
 
-  // 3) Dynamic result panel
+  // 3) Create the dynamic right panel
   function createResultPanel() {
     if (resultSec) return;
     resultSec = document.createElement("div");
@@ -31,20 +35,22 @@ document.addEventListener("DOMContentLoaded", () => {
     resultSec.className = [
       "bg-white bg-opacity-10 backdrop-blur-lg p-6 rounded-2xl",
       "overflow-auto hide-scrollbar max-h-[calc(100vh-4rem)]",
-      "flex-shrink-0 min-w-[20rem] text-white"
+      "flex-shrink-0 min-w-[20rem] flex-grow-0 text-white"
     ].join(" ");
-    gsap.set(resultSec, { width:"5%", autoAlpha:0 });
+    // start hidden and no flex
+    gsap.set(resultSec, { autoAlpha: 0, flexGrow: 0 });
     container.appendChild(resultSec);
   }
 
-  // 4) Reveal & animate
+  // 4) Reveal & flex-grow the right panel
   function revealResults() {
     createResultPanel();
+    // animate flexGrow from 0 → 1, content stays at its width
     gsap.to(resultSec, {
-      duration:0.8,
-      width:"auto",
-      autoAlpha:1,
-      ease:"power3.out"
+      duration: 0.8,
+      flexGrow: 1,
+      autoAlpha: 1,
+      ease: "power3.out"
     });
   }
 
@@ -66,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <canvas id="pie-chart" class="w-full h-40 mb-4"></canvas>
     `;
     new Chart(document.getElementById("pie-chart"), {
-      type:"pie",
+      type: "pie",
       data:{ labels:["Pos","Neu","Neg"], datasets:[{ data:[85,10,5] }] }
     });
     revealResults();
@@ -86,11 +92,11 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="overflow-x-auto hide-scrollbar mb-4">
         <table class="w-full table-auto border-collapse border border-white/30">
           <thead>
-            <tr>
-              <th class="border px-2 py-1 bg-white/20 text-white">#</th>
-              <th class="border px-2 py-1 bg-white/20 text-white">Text</th>
-              <th class="border px-2 py-1 bg-white/20 text-white">Sentiment</th>
-              <th class="border px-2 py-1 bg-white/20 text-white">Score</th>
+            <tr class="bg-white/20">
+              <th class="border px-2 py-1">#</th>
+              <th class="border px-2 py-1">Text</th>
+              <th class="border px-2 py-1">Sentiment</th>
+              <th class="border px-2 py-1">Score</th>
             </tr>
           </thead>
           <tbody>
@@ -109,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     const counts = { Positive:1, Neutral:1, Negative:1 };
     new Chart(document.getElementById("pie-chart"), {
-      type:"pie",
+      type: "pie",
       data:{ labels:Object.keys(counts), datasets:[{ data:Object.values(counts) }] }
     });
     revealResults();
@@ -118,8 +124,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // 7) Dummy Web Scraper
   document.getElementById("scrape-form").addEventListener("submit", e => {
     e.preventDefault();
-    const targetW = Math.min(window.innerWidth * 0.4, 400) + "px";
-    gsap.to(content, { duration:0.5, width:targetW, ease:"power2.out" });
+    const w = Math.min(window.innerWidth * 0.4, 400) + "px";
+    gsap.to(content, { duration:0.5, width:w, ease:"power2.out" });
 
     const out = document.getElementById("scrape-output");
     out.className = "mt-4 overflow-auto hide-scrollbar max-h-[60vh] text-white";
@@ -131,9 +137,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="overflow-x-auto hide-scrollbar mb-4">
           <table class="w-full table-auto border-collapse border border-white/30">
             <thead>
-              <tr>
-                <th class="border px-2 py-1 bg-white/20 text-white">#</th>
-                <th class="border px-2 py-1 bg-white/20 text-white">Review</th>
+              <tr class="bg-white/20">
+                <th class="border px-2 py-1">#</th>
+                <th class="border px-2 py-1">Review</th>
               </tr>
             </thead>
             <tbody>
