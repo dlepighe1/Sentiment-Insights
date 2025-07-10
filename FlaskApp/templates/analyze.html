@@ -2,52 +2,53 @@
 {% extends "base.html" %}
 {% block title %}Analyze – Sentiment App{% endblock %}
 {% block content %}
-<!-- hide-scrollbar utility -->
 <style>
-.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-.hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
 </style>
 
 <div id="analyze-container"
-     class="flex items-start justify-center space-x-6 p-6 h-[calc(100vh-4rem)] overflow-hidden">
+     class="flex flex-col md:flex-row items-start justify-center space-y-6 md:space-y-0 md:space-x-6 p-6 h-screen overflow-auto">
 
-  <!-- Sidebar (left) -->
+  <!-- Sidebar -->
   <div id="sidebar"
-       class="w-48 bg-white bg-opacity-10 backdrop-blur-lg p-6 rounded-2xl
-              flex flex-col justify-center space-y-4">
-    <button onclick="loadSection('text')"   class="option-btn">Text Prediction</button>
-    <button onclick="loadSection('bulk')"   class="option-btn">Bulk Prediction</button>
-    <button onclick="loadSection('scrape')" class="option-btn">Web Scraper</button>
+       class="w-full md:w-48 bg-white bg-opacity-10 backdrop-blur-lg p-6 rounded-2xl border border-white/30
+              flex flex-col space-y-4">
+    <button onclick="loadSection('text')"   class="option-btn w-full">Text Prediction</button>
+    <button onclick="loadSection('bulk')"   class="option-btn w-full">Bulk Prediction</button>
+    <button onclick="loadSection('scrape')" class="option-btn w-full">Web Scraper</button>
   </div>
 
-  <!-- Content (middle) -->
+  <!-- Main content -->
   <section id="content-area"
-           class="w-80 bg-white bg-opacity-10 backdrop-blur-lg p-6 rounded-2xl">
+           class="w-full md:w-80 bg-white bg-opacity-10 backdrop-blur-lg p-6 rounded-2xl border border-white/30">
     <form id="text-form" class="form-section">
-      <select id="text-model-select" class="w-full p-2 rounded mb-4 bg-white bg-opacity-20">
-        <option>Bert</option><option>ZeroShot</option><option>LR</option>
+      <select id="text-model-select"
+              class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
+        <option>BERT</option><option>ZeroShot</option><option>LR</option>
       </select>
       <textarea id="text-input" rows="5" placeholder="Enter text…"
-                class="w-full p-2 rounded mb-4 bg-white bg-opacity-20"></textarea>
+                class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30"></textarea>
       <button type="submit" class="w-full py-2 rounded bg-blue-600">Predict</button>
     </form>
+
     <form id="bulk-form" class="form-section hidden">
-      <select id="bulk-model-select" class="w-full p-2 rounded mb-4 bg-white bg-opacity-20">
-        <option>Bert</option><option>ZeroShot</option><option>LR</option>
+      <select id="bulk-model-select"
+              class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
+        <option>BERT</option><option>ZeroShot</option><option>LR</option>
       </select>
-      <input type="file" id="file-input" class="w-full mb-4"/>
+      <input type="file" id="file-input"
+             class="w-full mb-4 border border-white/30"/>
       <button type="submit" class="w-full py-2 rounded bg-blue-600">Predict Bulk</button>
     </form>
+
     <form id="scrape-form" class="form-section hidden">
       <input type="text" id="url-input" placeholder="Enter URL…"
-             class="w-full p-2 rounded mb-4 bg-white bg-opacity-20"/>
+             class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30"/>
       <button type="submit" class="w-full py-2 rounded bg-blue-600">Scrape</button>
       <div id="scrape-output" class="mt-4"></div>
     </form>
   </section>
-
-  <!-- result-section will be injected here by JS -->
-
 </div>
 {% endblock %}
 
