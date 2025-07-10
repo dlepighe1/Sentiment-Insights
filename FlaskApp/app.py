@@ -1,7 +1,17 @@
-# app.py
 from flask import Flask, render_template, request, jsonify
+from MLM import LRModel, RFModel
+import os
 
 app = Flask(__name__, static_folder="static")
+
+# Load the models here
+BASE_DIR        = os.path.dirname(os.path.abspath(__file__))
+LR_MODEL_PATH   = os.path.join(BASE_DIR, 'models', 'lr_model.joblib')
+RF_MODEL_PATH   = os.path.join(BASE_DIR, 'models', 'rf_model.joblib')
+
+lrModel   = LRModel(LR_MODEL_PATH)
+rfModel   = RFModel(RF_MODEL_PATH)
+# turboModel = TurboAIModel(TURBO_MODEL_CFG)  # your LLM wrapper
 
 @app.route("/")
 def home():
@@ -17,10 +27,30 @@ def about():
 
 @app.route("/predict_text", methods=["POST"])
 def predict_text():
-    text = request.json.get("text", "")
-    # TODO: plug in real model
-    data = [{"text": text, "sentiment": "Positive", "score": 0.95}]
-    return jsonify(data=data)
+    payload    = request.json or {}
+    model_name = payload.get("model")
+    text       = payload.get("text", "")
+
+    # Dispatch to the correct model
+    if model_name == "Logistic Regression":
+        pred_label, class_probs, top_features = lrModel.predict(text)
+    elif model_name == "Random Forest":
+        pred_label, class_probs, top_features = rfModel.predict(text)
+    elif model_name == "Turbo AI (LLM)":
+        pred_label, class_probs, top_features = "working", "working", "working"
+    else:
+        return jsonify(error="Unknown model"), 400
+
+    # Format the response
+    return jsonify({
+        "prediction":    pred_label,
+        "probabilities": class_probs,
+        "top_features":  [
+            {"feature": f, "contribution": float(c)}
+            for f, c in top_features
+        ]
+    })
+
 
 @app.route("/predict_bulk", methods=["POST"])
 def predict_bulk():

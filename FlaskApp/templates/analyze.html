@@ -1,6 +1,6 @@
-<!-- templates/analyze.html -->
 {% extends "base.html" %}
 {% block title %}Analyze – Sentiment App{% endblock %}
+
 {% block content %}
 <style>
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -8,41 +8,74 @@
 </style>
 
 <div id="analyze-container"
-     class="flex flex-col md:flex-row items-start justify-center space-y-6 md:space-y-0 md:space-x-6 p-6 h-screen overflow-auto">
+     class="flex flex-col md:flex-row items-start justify-center
+            space-y-6 md:space-y-0 md:space-x-6 p-6 h-screen overflow-auto">
 
   <!-- Sidebar -->
   <div id="sidebar"
-       class="w-full md:w-48 bg-white bg-opacity-10 backdrop-blur-lg p-6 rounded-2xl border border-white/30
-              flex flex-col space-y-4">
-    <button onclick="loadSection('text')"   class="option-btn w-full">Text Prediction</button>
-    <button onclick="loadSection('bulk')"   class="option-btn w-full">Bulk Prediction</button>
-    <button onclick="loadSection('scrape')" class="option-btn w-full">Web Scraper</button>
+       class="w-full md:w-48 bg-white bg-opacity-10 backdrop-blur-lg
+              p-6 rounded-2xl border border-white/30 flex flex-col space-y-4">
+    <button data-sec="text"
+            onclick="loadSection('text')"
+            class="option-btn transform transition-transform duration-300
+                   text-base text-white bg-white bg-opacity-10 py-2 rounded w-full
+                   scale-105 opacity-100 font-semibold bg-opacity-30 border-l-4 border-blue-400">
+      Text Prediction
+    </button>
+    <button data-sec="bulk"
+            onclick="loadSection('bulk')"
+            class="option-btn transform transition-transform duration-300
+                   text-base text-white bg-white bg-opacity-10 py-2 rounded w-full
+                   scale-95 opacity-80 border-transparent">
+      Bulk Prediction
+    </button>
+    <button data-sec="scrape"
+            onclick="loadSection('scrape')"
+            class="option-btn transform transition-transform duration-300
+                   text-base text-white bg-white bg-opacity-10 py-2 rounded w-full
+                   scale-95 opacity-80 border-transparent">
+      Web Scraper
+    </button>
   </div>
 
   <!-- Main content -->
   <section id="content-area"
-           class="w-full md:w-80 bg-white bg-opacity-10 backdrop-blur-lg p-6 rounded-2xl border border-white/30">
+           class="w-full md:w-80 bg-white bg-opacity-10 backdrop-blur-lg
+                  p-6 rounded-2xl border border-white/30">
+    <!-- Text Prediction Form -->
     <form id="text-form" class="form-section">
       <select id="text-model-select"
               class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
-        <option>BERT</option><option>ZeroShot</option><option>LR</option>
+        <option>Logistic Regression</option>
+        <option>Random Forest</option>
+        <option>Turbo AI (LLM)</option>
       </select>
       <textarea id="text-input" rows="5" placeholder="Enter text…"
                 class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30"></textarea>
       <button type="submit" class="w-full py-2 rounded bg-blue-600">Predict</button>
     </form>
 
+    <!-- Bulk Prediction Form -->
     <form id="bulk-form" class="form-section hidden">
       <select id="bulk-model-select"
               class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
-        <option>BERT</option><option>ZeroShot</option><option>LR</option>
+        <option>Logistic Regression</option>
+        <option>Random Forest</option>
+        <option>Turbo AI (LLM)</option>
       </select>
       <input type="file" id="file-input"
              class="w-full mb-4 border border-white/30"/>
       <button type="submit" class="w-full py-2 rounded bg-blue-600">Predict Bulk</button>
     </form>
 
+    <!-- Web Scraper Form -->
     <form id="scrape-form" class="form-section hidden">
+      <select id="scrape-model-select"
+              class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
+        <option>Logistic Regression</option>
+        <option>Random Forest</option>
+        <option>Turbo AI (LLM)</option>
+      </select>
       <input type="text" id="url-input" placeholder="Enter URL…"
              class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30"/>
       <button type="submit" class="w-full py-2 rounded bg-blue-600">Scrape</button>
