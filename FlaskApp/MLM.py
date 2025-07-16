@@ -66,4 +66,22 @@ class RFModel:                       # Random Forest
         
     def predict(self, text, top_n=10): 
         """ Predict the result given the input text: Return a json file with data information """
-        print("temp")        
+        # Vectorize
+        X = vectorizer.transform([clean_text(text)])
+
+        # Predict label and probabilities
+        pred_label = self.model.predict(X)[0]
+        proba = self.model.predict_proba(X)[0]
+        class_probs = dict(zip(self.model.classes_, proba))
+        
+        # Compute word-level relevance scores
+        x_dense = X.toarray().ravel()
+        importances = self.model.feature_importances_
+        relevance = x_dense * importances 
+        
+        # Identify top_n contributing features
+        feature_names = vectorizer.get_feature_names_out()
+        top_indices = np.argsort(relevance)[::-1][:top_n]
+        top_features = [(feature_names[i], float(relevance[i])) for i in top_indices if relevance[i] > 0]
+        
+        return pred_label, class_probs, top_features
