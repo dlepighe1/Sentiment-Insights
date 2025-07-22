@@ -82,6 +82,7 @@ class RFModel:                       # Random Forest
         # Identify top_n contributing features
         feature_names = vectorizer.get_feature_names_out()
         top_indices = np.argsort(relevance)[::-1][:top_n]
-        top_features = [(feature_names[i], float(relevance[i])) for i in top_indices if relevance[i] > 0]
+        top_features = [(feature_names[i], relevance[i]) for i in top_indices if relevance[i] > 0]
         
         return pred_label, class_probs, top_features
+    

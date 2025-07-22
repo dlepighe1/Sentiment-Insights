@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from MLM import LRModel, RFModel
+from LLM import SentimentAnalyzerLLM
 import os
 
 app = Flask(__name__, static_folder="static")
@@ -11,7 +12,7 @@ RF_MODEL_PATH   = os.path.join(BASE_DIR, 'models', 'rf_model.joblib')
 
 lrModel   = LRModel(LR_MODEL_PATH)
 rfModel   = RFModel(RF_MODEL_PATH)
-# turboModel = TurboAIModel(TURBO_MODEL_CFG)  # your LLM wrapper
+llModel   = SentimentAnalyzerLLM()
 
 @app.route("/")
 def home():
@@ -31,24 +32,30 @@ def predict_text():
     model_name = payload.get("model")
     text       = payload.get("text", "")
 
-    # Dispatch to the correct model
     if model_name == "Logistic Regression":
         pred_label, class_probs, top_features = lrModel.predict(text)
+        explanation = None
+
     elif model_name == "Random Forest":
         pred_label, class_probs, top_features = rfModel.predict(text)
-    elif model_name == "Turbo AI (LLM)":
-        pred_label, class_probs, top_features = "working", "working", "working"
+        explanation = None
+
+    elif model_name == "Meta Llama 3.3":
+        pred_label, class_probs, top_features, explanation = llModel.predict(text)
+        # Normalize class probabilities
+        class_probs = {label.lower(): score / 100.0 if score > 1 else score for label, score in class_probs.items()}
+
     else:
         return jsonify(error="Unknown model"), 400
 
-    # Format the response
     return jsonify({
         "prediction":    pred_label,
         "probabilities": class_probs,
         "top_features":  [
-            {"feature": f, "contribution": float(c)}
-            for f, c in top_features
-        ]
+            {"feature": feature, "contribution": contribution}
+            for feature, contribution in top_features
+        ],
+        "explanation": explanation
     })
 
 
