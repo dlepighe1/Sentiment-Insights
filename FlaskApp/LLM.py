@@ -22,7 +22,7 @@ class SentimentAnalyzerLLM:
             return match.group(1).strip()
         
         # If no backticks, return None or raise exception
-        return None
+        return text
 
     def predict(self, text, top_n=10):
         # Clean the input text
@@ -86,9 +86,31 @@ class SentimentAnalyzerLLM:
             else:
                 print(f"[Attempt {attempt}] No valid JSON found. Retrying...\n")
 
+    def predict_proba(self, text):
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "system", "content": "You are a sentiment analysis API. Given input, reply _only_ with valid string""You are a sentiment analysis assistant. You always return results strictly in valid JSON format with no extra text."}, 
+                      {"role": "user", "content": f"""
+Analyze the following text for sentiment and return a JSON object with these fields:
+    - "pred_label": Positive, Neutral, or Negative
+    - "probability": value between 0 to 100 that reflect the label based on proper reasoning
+{text}
+Respond immediately with the JSON object **only**. Avoid Null or None values.
+                       """}], 
+            max_tokens=50,
+            temperature=0.0
+        )
+        
+        result_text = response.choices[0].message.content.strip()
+        
+        print(result_text)
+        payload = json.loads(self.clean_response(result_text))
+        
+        pred_label = payload.get("pred_label")
+        probability = payload.get("probability")
+        
+        return pred_label, float(probability)
     
-    
-test = SentimentAnalyzerLLM()
-text = "I know you ain't laughing. this shit is trash"
-text = "I know you ain't laughing. this shit is trash. What else can you do other than messing around?"
-res = test.predict(text)
+# test = SentimentAnalyzerLLM()
+# text = "I know you ain't laughing. this shit is trash. What else can you do other than messing around?"
+# print(test.predict_proba(text))

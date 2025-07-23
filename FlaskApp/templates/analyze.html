@@ -3,35 +3,33 @@
 
 {% block content %}
 <style>
-  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 </style>
 
-<div id="analyze-container"
-     class="flex flex-col md:flex-row items-start justify-center
+<div id="analyze-container" class="flex flex-col md:flex-row items-start justify-center
             space-y-6 md:space-y-0 md:space-x-6 p-6 h-screen overflow-auto">
 
   <!-- Sidebar -->
-  <div id="sidebar"
-       class="w-full md:w-48 bg-white bg-opacity-10 backdrop-blur-lg
+  <div id="sidebar" class="w-full md:w-48 bg-white bg-opacity-10 backdrop-blur-lg
               p-6 rounded-2xl border border-white/30 flex flex-col space-y-4">
-    <button data-sec="text"
-            onclick="loadSection('text')"
-            class="option-btn transform transition-transform duration-300
+    <button data-sec="text" onclick="loadSection('text')" class="option-btn transform transition-transform duration-300
                    text-base text-white bg-white bg-opacity-10 py-2 rounded w-full
                    scale-105 opacity-100 font-semibold border-l-4 border-blue-400">
       Text Prediction
     </button>
-    <button data-sec="bulk"
-            onclick="loadSection('bulk')"
-            class="option-btn transform transition-transform duration-300
+    <button data-sec="bulk" onclick="loadSection('bulk')" class="option-btn transform transition-transform duration-300
                    text-base text-white bg-white bg-opacity-10 py-2 rounded w-full
                    scale-95 opacity-80 border-transparent">
       Bulk Prediction
     </button>
-    <button data-sec="scrape"
-            onclick="loadSection('scrape')"
-            class="option-btn transform transition-transform duration-300
+    <button data-sec="scrape" onclick="loadSection('scrape')" class="option-btn transform transition-transform duration-300
                    text-base text-white bg-white bg-opacity-10 py-2 rounded w-full
                    scale-95 opacity-80 border-transparent">
       Web Scraper
@@ -39,45 +37,55 @@
   </div>
 
   <!-- Main content -->
-  <section id="content-area"
-           class="w-full md:w-80 bg-white bg-opacity-10 backdrop-blur-lg
+  <section id="content-area" class="w-full md:w-80 bg-white bg-opacity-10 backdrop-blur-lg
                   p-6 rounded-2xl border border-white/30">
     <!-- Text Prediction Form -->
     <form id="text-form" class="form-section">
-      <select id="text-model-select"
-              class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
+      <select id="text-model-select" class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
         <option>Logistic Regression</option>
         <option>Random Forest</option>
         <option>Meta Llama 3.3</option>
       </select>
       <textarea id="text-input" rows="5" placeholder="Enter text…"
-                class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30"></textarea>
+        class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30"></textarea>
       <button type="submit" class="w-full py-2 rounded bg-blue-600">Predict</button>
     </form>
 
     <!-- Bulk Prediction Form -->
     <form id="bulk-form" class="form-section hidden">
-      <select id="bulk-model-select"
-              class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
+      <select id="bulk-model-select" class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
         <option>Logistic Regression</option>
         <option>Random Forest</option>
         <option>Meta Llama 3.3</option>
       </select>
-      <input type="file" id="file-input"
-             class="w-full mb-4 border border-white/30"/>
+      <div id="drop-area" class="w-full mb-4 flex flex-col items-center justify-center gap-2
+            border-2 border-gray-400
+            rounded-xl bg-gray-100 bg-opacity-80
+            cursor-pointer transition-colors duration-200
+            py-8 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 48 48" class="w-14 h-14 text-gray-400 mb-1">
+          <rect x="6" y="4" width="36" height="40" rx="6" fill="#e5e7eb" stroke-width="1" />
+          <path d="M13 12h22M13 18h22M13 24h18" stroke="#64748b" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <p class="text-base text-gray-700 font-medium mb-0.5 transition-opacity duration-200 select-none">
+          Drag & drop a file here
+        </p>
+        <p class="text-sm text-gray-700 font-normal mb-2">or click to select</p>
+        <input type="file" id="file-input" class="hidden" accept=".txt,.csv" />
+      </div>
+
       <button type="submit" class="w-full py-2 rounded bg-blue-600">Predict Bulk</button>
     </form>
 
     <!-- Web Scraper Form -->
     <form id="scrape-form" class="form-section hidden">
-      <select id="scrape-model-select"
-              class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
+      <select id="scrape-model-select" class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
         <option>Logistic Regression</option>
         <option>Random Forest</option>
         <option>Meta Llama 3.3</option>
       </select>
       <input type="text" id="url-input" placeholder="Enter URL…"
-             class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30"/>
+        class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30" />
       <button type="submit" class="w-full py-2 rounded bg-blue-600">Scrape</button>
       <div id="scrape-output" class="mt-4"></div>
     </form>
@@ -86,6 +94,6 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="{{ url_for('static', filename='js/analyze.js') }}" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/analyze.js') }}" defer></script>
 {% endblock %}
