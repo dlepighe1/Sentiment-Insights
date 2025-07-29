@@ -41,7 +41,8 @@
                   p-6 rounded-2xl border border-white/30">
     <!-- Text Prediction Form -->
     <form id="text-form" class="form-section">
-      <select id="text-model-select" class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
+      <select id="text-model-select"
+              class="w-full p-2 rounded mb-4 bg-gray-100 bg-opacity-100 border border-gray-300 text-black">
         <option>Logistic Regression</option>
         <option>Random Forest</option>
         <option>Meta Llama 3.3</option>
@@ -53,7 +54,8 @@
 
     <!-- Bulk Prediction Form -->
     <form id="bulk-form" class="form-section hidden">
-      <select id="bulk-model-select" class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
+      <select id="bulk-model-select"
+              class="w-full p-2 rounded mb-4 bg-gray-100 bg-opacity-100 border border-gray-300 text-black">
         <option>Logistic Regression</option>
         <option>Random Forest</option>
         <option>Meta Llama 3.3</option>
@@ -79,16 +81,15 @@
 
     <!-- Web Scraper Form -->
     <form id="scrape-form" class="form-section hidden">
-      <select id="scrape-model-select" class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30">
-        <option>Logistic Regression</option>
-        <option>Random Forest</option>
-        <option>Meta Llama 3.3</option>
-      </select>
-      <input type="text" id="url-input" placeholder="Enter URL…"
-        class="w-full p-2 rounded mb-4 bg-white bg-opacity-20 border border-white/30" />
-      <button type="submit" class="w-full py-2 rounded bg-blue-600">Scrape</button>
-      <div id="scrape-output" class="mt-4"></div>
+      <div class="p-6 text-white">
+        <h3 class="text-2xl font-semibold mb-4">Web Scraper</h3>
+        <p class="text-base">
+          This feature is under active development and will be made available soon.
+          Thank you for your patience.
+        </p>
+      </div>
     </form>
+
   </section>
 </div>
 {% endblock %}

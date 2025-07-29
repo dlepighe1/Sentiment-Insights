@@ -1,7 +1,5 @@
 from together import Together
-import json
-import os
-import re
+import json, re, os
 
 API_KEY = "3a823237163e2759f94c94b7a7b32f2454cfe3a0dbf677afe8090d16dd1ef4c7"
 
@@ -111,6 +109,6 @@ Respond immediately with the JSON object **only**. Avoid Null or None values.
         
         return pred_label, float(probability)
     
-# test = SentimentAnalyzerLLM()
-# text = "I know you ain't laughing. this shit is trash. What else can you do other than messing around?"
-# print(test.predict_proba(text))
+test = SentimentAnalyzerLLM()
+text = "I know you ain't laughing. this shit is trash. What else can you do other than messing around?"
+print(test.predict_proba(text))

@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from MLM import LRModel, RFModel
 from LLM import SentimentAnalyzerLLM
-from scrapy import *
 import os
 import io 
 import csv
@@ -120,67 +119,6 @@ def predict_bulk():
         })
 
     return jsonify(data=results)
-
-
-@app.route("/scrape_predict", methods=["POST"])
-def scrape():
-    data = request.get_json() or {}
-    url  = data.get("url", "")
-    if not url:
-        return jsonify(error="Please provide a URL"), 400
-
-    try:
-        if "amazon." in url:
-            product_name, reviews = AmazonScraper(url)
-        elif "yelp." in url:
-            product_name, reviews = YelpScraper(url)
-        else:
-            return jsonify(error="Unsupported website."), 400
-
-        return jsonify({
-            "productName": product_name,
-            "reviews":     reviews
-        }), 200
-    except Exception as e:
-        return jsonify(error=f"Failed to scrape: {str(e)}"), 500
-
-@app.route("/predict_reviews", methods=["POST"])
-def predict_reviews():
-    data       = request.get_json() or {}
-    reviews    = data.get("reviews", [])
-    model_name = data.get("model")
-
-    if not reviews or not isinstance(reviews, list):
-        return jsonify(error="No reviews provided"), 400
-
-    results = []
-    for text in reviews:
-        # call the right model
-        if model_name == "Logistic Regression":
-            pred_label, class_probs, _ = lrModel.predict(text)
-            score = class_probs.get(pred_label, 0.0)
-
-        elif model_name == "Random Forest":
-            pred_label, class_probs, _ = rfModel.predict(text)
-            score = class_probs.get(pred_label, 0.0)
-
-        elif model_name == "Meta Llama 3.3":
-            # predict_proba returns (label, probability)
-            pred_label, probability = llModel.predict_proba(text)
-            # normalize 0–100 → 0–1 if needed
-            score = probability / 100.0 if probability > 1 else probability
-
-        else:
-            return jsonify(error="Unknown model"), 400
-
-        results.append({
-            "text":      text,
-            "sentiment": pred_label,
-            "score":     score
-        })
-
-    return jsonify(data=results)
-
 
 if __name__ == "__main__":
     app.run(debug=True)

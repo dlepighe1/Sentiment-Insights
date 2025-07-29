@@ -2,18 +2,97 @@
 {% extends "base.html" %}
 {% block title %}About – Sentiment App{% endblock %}
 {% block content %}
-<div class="p-8 space-y-6 max-w-3xl mx-auto">
-  <div class="bg-white bg-opacity-20 backdrop-blur-lg p-6 rounded-2xl">
-    <h1 class="text-3xl font-bold mb-4">About Us</h1>
-    <p>We build state-of-the-art sentiment analysis tools to turn raw text into actionable insights, empowering organizations to understand their audience in real time.</p>
-  </div>
-  <div class="bg-white bg-opacity-20 backdrop-blur-lg p-6 rounded-2xl">
-    <h2 class="text-2xl font-semibold mb-2">Our Technology</h2>
-    <p>Leveraging modern machine learning models and a cloud-native Flask backend, we deliver scalable, accurate sentiment scoring with an intuitive UI.</p>
-  </div>
-  <div class="bg-white bg-opacity-20 backdrop-blur-lg p-6 rounded-2xl">
-    <h2 class="text-2xl font-semibold mb-2">Meet the Team</h2>
-    <p>Our multidisciplinary team of data scientists, engineers, and designers collaborate to create seamless experiences for analyzing text at scale.</p>
-  </div>
+<!-- Hide main scrollbar and make this container scrollable -->
+<style>
+@layer utilities {
+  .hide-scrollbar {
+    -ms-overflow-style: none;    /* IE & Edge */
+    scrollbar-width: none;       /* Firefox */
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;               /* Chrome, Safari, Opera */
+  }
+}
+
+</style>
+
+<div id="about-container" class="p-8 max-w-4xl mx-auto h-[90vh] overflow-y-auto hide-scrollbar space-y-8">
+  
+  <!-- About This Project -->
+  <section class="bg-white bg-opacity-20 backdrop-blur-lg p-6 rounded-2xl">
+    <h2 class="text-2xl font-semibold mb-4">About This Project</h2>
+    <p class="text-gray-100 leading-relaxed">
+      This web application delivers advanced sentiment analysis for both single text inputs and bulk documents. 
+      Designed to help users extract meaningful insights, it supports multiple powerful machine learning models including Logistic Regression, Random Forest, and a state-of-the-art large language model (Meta Llama 3.3).
+    </p>
+  </section>
+
+  <!-- How It Works -->
+  <section class="bg-white bg-opacity-20 backdrop-blur-lg p-6 rounded-2xl space-y-6">
+    <h2 class="text-2xl font-semibold mb-4">How to Use This Application</h2>
+
+    <div>
+      <h3 class="text-xl font-semibold mb-2">1. Text Prediction</h3>
+      <p class="text-gray-100 mb-2 leading-relaxed">
+        Simply type or paste your text into the input form and submit to get an instant sentiment prediction.
+        The results include:
+      </p>
+      <ul class="list-disc list-inside text-gray-100 space-y-1 mb-4">
+        <li><strong>Predicted Sentiment:</strong> The sentiment label assigned to your input (Positive, Neutral, or Negative).</li>
+        <li><strong>Probability Scores:</strong> Percentages reflecting the model's confidence for each sentiment class.</li>
+        <li><strong>Top Contributing Words:</strong> Highlights important words and their quantitative contributions to the final prediction.</li>
+      </ul>
+      <p class="text-gray-100 leading-relaxed">
+        For the Meta Llama model, an additional <em>Explanation</em> section provides a short reasoning behind the prediction, showcasing the interpretability power of large language models.
+      </p>
+    </div>
+
+    <div>
+      <h3 class="text-xl font-semibold mb-2">2. Bulk Prediction</h3>
+      <p class="text-gray-100 mb-2 leading-relaxed">
+        Upload or drag and drop a file in CSV or TXT format containing multiple texts for batch sentiment analysis.
+        The application:
+      </p>
+      <ul class="list-disc list-inside text-gray-100 space-y-1 mb-4">
+        <li>Reads each line or row of text from your file.</li>
+        <li>Predicts the sentiment for every entry.</li>
+        <li>Returns the results including an added sentiment column and a sentiment score for each line.</li>
+      </ul>
+      <p class="text-gray-100 leading-relaxed">
+        <strong>Note:</strong> The sentiment score corresponds to the highest sentiment probability for that text. For example, if the predicted label is "Positive" with a score of 45%, the other sentiments (Neutral, Negative) have lower probabilities such that all scores sum to approximately 100%. An illustrative split might look like 45% Positive, 40% Negative, and 15% Neutral.
+      </p>
+    </div>
+
+    <div>
+      <h3 class="text-xl font-semibold mb-2">3. Web Scraping (Coming Soon)</h3>
+      <p class="text-gray-100 leading-relaxed">
+        We're excited to introduce a web scraping feature soon that will allow you to extract text data directly from websites for seamless sentiment analysis at scale. Stay tuned!
+      </p>
+    </div>
+  </section>
+
+  <!-- Our Goal -->
+  <section class="bg-white bg-opacity-20 backdrop-blur-lg p-6 rounded-2xl">
+    <h2 class="text-2xl font-semibold mb-4">Our Goal</h2>
+    <p class="text-gray-100 leading-relaxed">
+      We aim to provide an accessible and interpretable tool that empowers individuals and organizations to understand sentiment and opinion trends in text data efficiently, whether for market research, social media monitoring, or customer feedback analysis.
+    </p>
+  </section>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // hide main scrollbar if any remained
+    gsap.set("html, body", { css: { overflow: "hidden" } });
+
+    // fade in sections
+    gsap.from("#about-container section", {
+      duration: 1,
+      autoAlpha: 0,
+      y: 20,
+      stagger: 0.3,
+      ease: "power2.out"
+    });
+  });
+</script>
 {% endblock %}
