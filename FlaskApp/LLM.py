@@ -109,6 +109,6 @@ Respond immediately with the JSON object **only**. Avoid Null or None values.
         
         return pred_label, float(probability)
     
-test = SentimentAnalyzerLLM()
-text = "I know you ain't laughing. this shit is trash. What else can you do other than messing around?"
-print(test.predict_proba(text))
+# test = SentimentAnalyzerLLM()
+# text = "I know you ain't laughing. this shit is trash. What else can you do other than messing around?"
+# print(test.predict_proba(text))
