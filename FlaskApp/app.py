@@ -119,3 +119,5 @@ def predict_bulk():
         })
 
     return jsonify(data=results)
+
+app.run(debug=True)

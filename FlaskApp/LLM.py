@@ -1,7 +1,7 @@
 from together import Together
 import json, re, os
 
-API_KEY = os.getenv("TOGETHER_API_KEY")
+API_KEY = os.getenv("TOGETHER_API_KEY") or "21a3e018-cf7f-4131-8ab7-44829c68a225"
 
 class SentimentAnalyzerLLM: 
     def __init__(self):
