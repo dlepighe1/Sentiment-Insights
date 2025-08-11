@@ -25,64 +25,63 @@ def clean_text(text):
     text = re.sub(r'\s+', ' ', text).strip()                                     # Remove extra spaces
     return text
 
-class LRModel:                       # Logistic Regression
+# ------------------------------------------------------------------------------- #
+class LRModel:  # Logistic Regression
     def __init__(self, model_path):
-        """ Load the model given the path where it is located """
         self.model = joblib.load(model_path)
+        self.label_map = {0: "negative", 1: "neutral", 2: "positive"}
 
     def predict(self, text, top_n=10):
-        """ Predict the result given the input text: Return a json file with data information """
-        # Vectorize
-        X = vectorizer.transform([clean_text(text)])
-        
-        # Predict
-        pred_label = self.model.predict(X)[0]
-        proba = self.model.predict_proba(X)[0]
-        class_probs = dict(zip(self.model.classes_, proba))
-        
-        # Identify the coefficient row for the predicted class
-        #    model.coef_.shape == (n_classes, n_features)
-        class_idx = list(self.model.classes_).index(pred_label)
-        coef_for_class = self.model.coef_[class_idx]
-        
-        # Compute per-word contributions = tfidf_value * coefficient
-        #    X is sparse, so we convert to dense row
-        x_dense = X.toarray().ravel()
-        contributions = x_dense * coef_for_class
-        
-        # Get feature names and sort by highest positive contributions
-        feature_names = vectorizer.get_feature_names_out()
-        top_indices = np.argsort(contributions)[::-1][:top_n]
-        top_features = [(feature_names[i], contributions[i]) for i in top_indices if contributions[i] > 0]
-        
-        return pred_label, class_probs, top_features
-     
-# ===================================================================== # 
-   
-class RFModel:                       # Random Forest
-    def __init__(self, model_path):    
-        """ Load the model given the path where it is located """
-        self.model = joblib.load(model_path)
-        
-    def predict(self, text, top_n=10): 
-        """ Predict the result given the input text: Return a json file with data information """
-        # Vectorize
         X = vectorizer.transform([clean_text(text)])
 
-        # Predict label and probabilities
-        pred_label = self.model.predict(X)[0]
+        # Predict
+        pred_label_num = self.model.predict(X)[0]  # np.int64
+        pred_label = self.label_map[int(pred_label_num)]
+
         proba = self.model.predict_proba(X)[0]
-        class_probs = dict(zip(self.model.classes_, proba))
-        
-        # Compute word-level relevance scores
+        # Map numeric keys -> categorical names
+        class_probs = {self.label_map[int(k)]: float(v)
+                       for k, v in zip(self.model.classes_, proba)}
+
+        # Get top features
+        class_idx = list(self.model.classes_).index(pred_label_num)
+        coef_for_class = self.model.coef_[class_idx]
+        x_dense = X.toarray().ravel()
+        contributions = x_dense * coef_for_class
+
+        feature_names = vectorizer.get_feature_names_out()
+        top_indices = np.argsort(contributions)[::-1][:top_n]
+        top_features = [(feature_names[i], contributions[i])
+                        for i in top_indices if contributions[i] > 0]
+
+        return pred_label, class_probs, top_features
+
+# ---------------------------------------------------------------------- #
+class RFModel:  # Random Forest
+    def __init__(self, model_path):
+        self.model = joblib.load(model_path)
+        self.label_map = {0: "negative", 1: "neutral", 2: "positive"}
+
+    def predict(self, text, top_n=10):
+        X = vectorizer.transform([clean_text(text)])
+
+        # Predict
+        pred_label_num = self.model.predict(X)[0]  # np.int64
+        pred_label = self.label_map[int(pred_label_num)]
+
+        proba = self.model.predict_proba(X)[0]
+        # Map numeric keys -> categorical names
+        class_probs = {self.label_map[int(k)]: float(v)
+                       for k, v in zip(self.model.classes_, proba)}
+
+        # Feature relevance
         x_dense = X.toarray().ravel()
         importances = self.model.feature_importances_
-        relevance = x_dense * importances 
-        
-        # Identify top_n contributing features
+        relevance = x_dense * importances
+
         feature_names = vectorizer.get_feature_names_out()
         top_indices = np.argsort(relevance)[::-1][:top_n]
-        top_features = [(feature_names[i], relevance[i]) for i in top_indices if relevance[i] > 0]
-        
+        top_features = [(feature_names[i], relevance[i])
+                        for i in top_indices if relevance[i] > 0]
+
         return pred_label, class_probs, top_features
-    

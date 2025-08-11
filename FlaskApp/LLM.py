@@ -1,8 +1,10 @@
 from together import Together
-import json, re, os
+from dotenv import load_dotenv
+import re, os, json
 
-API_KEY = os.getenv("TOGETHER_API_KEY") or "21a3e018-cf7f-4131-8ab7-44829c68a225"
+load_dotenv()
 
+API_KEY = os.getenv("API_KEY")
 class SentimentAnalyzerLLM: 
     def __init__(self):
         self.model = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
@@ -108,7 +110,3 @@ Respond immediately with the JSON object **only**. Avoid Null or None values.
         probability = payload.get("probability")
         
         return pred_label, float(probability)
-    
-# test = SentimentAnalyzerLLM()
-# text = "I know you ain't laughing. this shit is trash. What else can you do other than messing around?"
-# print(test.predict_proba(text))

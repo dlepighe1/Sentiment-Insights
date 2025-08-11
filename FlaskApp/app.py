@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 from MLM import LRModel, RFModel
 from LLM import SentimentAnalyzerLLM
+import numpy as np
+
 import os
 import io 
 import csv
@@ -17,6 +19,18 @@ rfModel   = RFModel(RF_MODEL_PATH)
 llModel   = SentimentAnalyzerLLM()
 
 PREDICTIONS = []
+
+# Defining a native converter
+def to_native(o):
+    if isinstance(o, (np.integer,)):  return int(o)
+    if isinstance(o, (np.floating,)): return float(o)
+    if isinstance(o, (np.ndarray,)):  return o.tolist()
+    if isinstance(o, dict):
+        return {str(to_native(k)): to_native(v) for k, v in o.items()}  # keys + values
+    if isinstance(o, (list, tuple, set)):
+        return [to_native(x) for x in o]
+    return o
+
 
 @app.route("/")
 def home():
@@ -61,6 +75,7 @@ def predict_text():
         ],
         "explanation": explanation
     })
+    
 
 @app.route("/predict_bulk", methods=["POST"])
 def predict_bulk():
