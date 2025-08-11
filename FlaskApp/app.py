@@ -135,4 +135,7 @@ def predict_bulk():
 
     return jsonify(data=results)
 
-app.run(debug=True)
+# Config for deployment
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))        # Get the port from Railway
+    app.run(host="0.0.0.0", port=port, debug=False)
